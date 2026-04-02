@@ -6,8 +6,8 @@
 
 ## 特性
 
-- 根据需求并行编写计划文档（Subagent）
-- 根据计划并行执行（Subagent）
+- 根据需求并行编写计划文档（Subagents）
+- 根据计划并行执行（Subagents）
 - 自动分析需求中的依赖关系、自动分派任务执行
 - 人类自由评审
 - 自适应需求变更
@@ -15,8 +15,8 @@
 
 ## 前置要求（建议）
 
-- 使用支持 Subagent 的 Coding Agent
-- 使用擅长处理长程任务的 AI 模型
+- 使用支持 Subagents 的 Coding Agent。
+- 使用擅长处理长程任务的 AI 模型。
 
 ## 为什么需要这个 Skill？
 

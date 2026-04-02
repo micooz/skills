@@ -6,16 +6,16 @@ An Agent Skill for AI coding agents to batch plan and execute tasks.
 
 ## Features
 
-- Parallel implementation plan generation (Subagent)
-- Parallel implementation based on plans (Subagent)
+- Parallel implementation plan generation (Subagents)
+- Parallel implementation based on plans (Subagents)
 - Automatic dependency analysis and task dispatching
 - Human-in-the-loop review process
-- Adaptive requirement changes
+- Adaptive to requirement changes
 - Archiving of original and revised plan versions
 
 ## Prerequisites (Recommended)
 
-- Use a coding agent that supports subagents
+- Use a coding agent that supports subagents.
 - Use an AI model optimized for long-context and complex reasoning tasks.
 
 ## Why this Skill?
@@ -69,7 +69,7 @@ npx skills add micooz/batch-plan-execute
 - xxx
 ```
 
-> **Tips:** Manually modularizing your requirements helps human readability.
+> **Tips:** Manually modularizing your requirements helps improve human readability.
 
 > **Tips:** It is recommended to maintain requirements in date-based folders:
 
@@ -141,7 +141,7 @@ Once all plans are reviewed, enter "Start execution" or use the command in a new
 $batch-plan-execute path/to/requirements.md 开始执行
 ```
 
-> **Tips:** If there are unresolved comments in the latest revision, AI will block execution.
+> **Tips:** If there are unresolved comments in the latest revision, the AI will block execution.
 
 Example:
 
@@ -163,7 +163,7 @@ Verify the implementation according to your requirements.
 
 ### Handling Pending Decisions
 
-AI will use `【⚠ Decision Required ⚠】` markers for items that need your choice:
+The AI will use `【⚠ Decision Required ⚠】` markers for items that need your choice:
 
 ```md
 ## Key Changes
