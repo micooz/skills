@@ -138,7 +138,7 @@ AI automatically revises the plans:
 Once all plans are reviewed, enter "Start execution" or use the command in a new session:
 
 ```shell
-$batch-plan-execute path/to/requirements.md 开始执行
+$batch-plan-execute path/to/requirements.md implement now
 ```
 
 > **Tips:** If there are unresolved comments in the latest revision, the AI will block execution.
