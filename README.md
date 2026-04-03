@@ -2,43 +2,43 @@
 
 English | [中文](README_zh.md)
 
-An Agent Skill for AI coding agents to batch plan and execute tasks.
+An Agent Skill for coding agents to write and execute plans in batches.
 
 ## Features
 
-- Parallel implementation plan generation (Subagents)
-- Parallel implementation based on plans (Subagents)
-- Automatic dependency analysis and task dispatching
-- Free human review
+- Write planning documents in parallel from requirements (Subagents)
+- Execute in parallel from the plans (Subagents)
+- Automatically analyze dependencies in requirements and dispatch tasks
+- Free-form human review
 - Adaptive to requirement changes
-- Archiving of original and revised plan versions
+- Save original and revised versions to disk for archival
 
 ## Prerequisites (Recommended)
 
-- Use a coding agent that supports subagents.
-- Use an AI model optimized for long-context and complex reasoning tasks.
+- Use a coding agent that supports Subagents.
+- Use an AI model that is good at handling long-running tasks.
 
-## Why this Skill?
+## Why Is This Skill Needed?
 
-While "Document-First" and "Plan-First" paradigms are best practices, we often fall into a vicious cycle of high-frequency interruptions:
+Document-first and plan-first programming are good practices. But we seem to have entered a vicious cycle of frequent interruptions:
 
 ```
-Human: Requirements -> AI: Planning -> Human: Review -> AI: Execute -> Human: Inspect -> Repeat
+Human writes requirements -> AI planning -> Human review -> AI execution -> Human acceptance -> Repeat
 ```
 
-Even though AI writes the code, humans still spend much of their day monitoring the AI, handling handovers, and reviewing every minor step.
+Humans no longer need to write code themselves. But we still sit in front of the computer all day watching AI work. We frequently handle AI handoffs and review the plans and results it produces.
 
 The design philosophy of this Agent Skill is:
 
-- **Asynchronous** over Synchronous
-- **Parallel** over Serial
-- **Less HITL** = Less Friction = More Efficient Token Usage = Lower Costs
+- Asynchronous over synchronous
+- Parallel over serial
+- Less HITL = less friction = higher token efficiency = lower cost
 
-Use this skill to minimize interaction frequency with AI, freeing your focus for more critical tasks.
+Use this Skill to reduce interaction with AI. Save your energy for more important things.
 
-For more design philosophy, see [Short Cycle and Long Cycle](#short-cycle-and-long-cycle).
+For more design ideas, see: [Short Cycle and Long Cycle](#short-cycle-and-long-cycle)
 
-## How to Use?
+## How to Use
 
 ### Installation
 
@@ -48,7 +48,7 @@ npx skills add micooz/batch-plan-execute
 
 ### Workflow
 
-1. **(Human)** Write a requirement document, e.g., `requirements.md`:
+1. (Human) Write a requirements document, for example `requirements.md`:
 
 ```md
 # 2026-04-01 Iteration
@@ -69,9 +69,9 @@ npx skills add micooz/batch-plan-execute
 - xxx
 ```
 
-> **Tips:** Manually modularizing your requirements helps improve human readability.
+> Tips: Splitting modules manually makes things easier for humans to read.
 
-> **Tips:** It is recommended to maintain requirements in date-based folders:
+> Tips: It is recommended to keep each day's requirements in a date-based folder:
 
 ```diff
  .docs
@@ -79,13 +79,13 @@ npx skills add micooz/batch-plan-execute
 +    └── requirements.md
 ```
 
-2. **(AI)** Activate the skill and provide the requirement document:
+2. (AI) Activate the skill and provide the requirements document:
 
 ```shell
 $batch-plan-execute path/to/requirements.md
 ```
 
-Resulting output:
+After execution, it produces:
 
 ```diff
  .docs
@@ -99,23 +99,23 @@ Resulting output:
      └── requirements.md
 ```
 
-> **Tips:** AI automatically analyzes dependencies and splits tasks into modules.
+> Tips: AI will analyze feature dependencies in the requirements and split them into modules automatically.
 
-3. **(Human)** Review the generated plans in the `plans/` directory.
+3. (Human) Review the generated planning documents under `plans/`
 
-Insert comments using HTML blocks `<!-- xxx -->` anywhere in the plan file (e.g., `plans/some-feature.md`).
+Insert comment blocks such as `<!-- xxx -->` anywhere in a planning document, such as `plans/some-feature.md`.
 
-> **Tips:** If a revision exists (e.g., `xxx.rev-n.md`), always review the latest version.
+> Tips: If an AI revision already exists (`xxx.rev-n.md`), review the latest one.
 
-4. **(AI)** Revise the plans.
+4. (AI) Revise the plans
 
-After adding review comments, run the command again:
+After writing your review comments, run it again:
 
 ```shell
 $batch-plan-execute path/to/requirements.md
 ```
 
-AI automatically revises the plans:
+After AI revises them, it produces:
 
 ```diff
  .docs
@@ -131,19 +131,19 @@ AI automatically revises the plans:
      └── requirements.md
 ```
 
-> **Tips:** Files without review comments will not generate new revisions.
+> Tips: Documents without review comments will not generate revision versions.
 
-5. **(AI)** Execute the plans.
+5. (AI) Execute the plans
 
-Once all plans are reviewed, enter "Start execution" or use the command in a new session:
+After all plans have been reviewed, enter `implement now`, or enter this in a new session:
 
 ```shell
 $batch-plan-execute path/to/requirements.md implement now
 ```
 
-> **Tips:** If there are unresolved comments in the latest revision, the AI will block execution.
+> Tips: If the latest revision still has unresolved review comments, AI will refuse to execute.
 
-Example:
+For example:
 
 ```
 - ui-polish-and-sse-guardrails: using rev-1, executable
@@ -153,63 +153,63 @@ Example:
 - chat-history-ui: latest version has comments, BLOCKED
 ```
 
-Please resolve all comments before proceeding with execution.
+At this point, go back to the previous step. Let AI finish the review comments before executing again.
 
-6. **(Human)** Inspect the results.
+6. (Human) Accept the results
 
-Verify the implementation according to your requirements.
+Verify the results based on your own requirements.
 
 ## Conventions
 
-### Handling Pending Decisions
+### Handling Pending Items
 
-The AI will use `【⚠ Decision Required ⚠】` markers for items that need your choice:
+AI will leave a `【⚠ Decision Required ⚠】` marker in the planning document when it needs you to choose an option:
 
 ```md
 ## Key Changes
-- xxx 【⚠ Decision Required ⚠】
+- xxx【⚠ Decision Required ⚠】
 a. (Recommended) xxx
 b. xxx
 c. xxx
 ```
 
-Refer to the "Plan Review" section below to handle these.
+See `Plan Review` below for how to handle pending items.
 
 ### Plan Review
 
-Use HTML comment blocks `<!--  -->` for feedback.
+Insert HTML comment blocks `<!--  -->` for review.
 
-> **Tips:** VS Code shortcut: `Command + /` (macOS) or `Ctrl + /` (Windows).
+> Tips: Shortcut on macOS: `Command + /`, shortcut on Windows: `Ctrl + /`.
 
 ```md
-# Feature Name
-<!-- Change this to: xxx -->
+# Some Feature
+<!-- Change to: xxx -->
 
-- xxx 【⚠ Decision Required ⚠】
+- xxx【⚠ Decision Required ⚠】
 a. (Recommended) xxx
 b. xxx
 c. xxx
-<!-- Option a. -->
+<!-- Use a. -->
 ```
 
 ### Requirement Changes
 
-1. **Deprecate items:** Delete them directly or comment them out with `<!-- -->`.
-2. **Add items:** Simply add new lines.
-3. **Modify items:** Edit existing text.
+1. Deprecated requirement items: delete them directly, or comment them out with `<!-- -->`.
+2. New requirement items: add them directly.
+3. Modified requirement items: edit them directly.
 
-> **Tips:** After updating the requirement document, run `$batch-plan-execute requirements.md` to update the plans.
+> Tips: After the requirements document changes, run `$batch-plan-execute requirements.md` to update the plans.
 
 ## Other Tips
 
-- In VS Code-like IDEs, use the `@command:workbench.files.action.compareFileWith` command to compare differences between revisions.
-- Switch to "Reasoning" or "Deep Thinking" models during the planning phase to improve document quality.
+- In VS Code-like IDEs, use `@command:workbench.files.action.compareFileWith` to compare revision versions.
+- Switch to a deep-thinking model in the planning phase to improve plan quality.
 
 ## Short Cycle and Long Cycle
 
-Traditional agent coding workflows can be described as a **Short Cycle**, where the human and agent operate in a single-threaded loop.
+I call past Agent Coding workflows the Short Cycle. In the Short Cycle, humans and agents work in a single-threaded mode.
 
-Single-threading leads to more interaction rounds, fragmented attention, and higher Token consumption:
+Single-threading often leads to more rounds of interaction, less focus, and more token use:
 
 ```
 +------------------------+       +------------------+       +----------------+
@@ -222,9 +222,9 @@ Single-threading leads to more interaction rounds, fragmented attention, and hig
                                    +---------------+       +----------------+
 ```
 
-We aim to shift this workflow to a **Long Cycle** using multi-threaded asynchronous collaboration.
+We need to change this workflow. We need a multi-threaded and asynchronous collaboration model. This extends the Short Cycle into a Long Cycle.
 
-Multi-threading means fewer interaction rounds, better focus, and more effective use of Tokens:
+Multi-threading means fewer rounds of interaction, better focus, and better token use.
 
 ```
                  +------------------------+
