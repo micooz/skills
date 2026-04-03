@@ -12,6 +12,7 @@ An Agent Skill for coding agents to write and execute plans in batches.
 - Free-form human review
 - Adaptive to requirement changes
 - Save original and revised versions to disk for archival
+- Provide `checklist.md` to support acceptance review
 
 ## Prerequisites (Recommended)
 
