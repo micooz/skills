@@ -102,7 +102,7 @@ The derived checklist file must be:
 
 The hidden state file must be:
 
-- `.batch-plan-state.json`
+- `.state.json`
 
 Use these naming rules:
 
@@ -118,7 +118,7 @@ Use these naming rules:
 
 ## State File
 
-Maintain `plans/.batch-plan-state.json` as the planning baseline.
+Maintain `plans/.state.json` as the planning baseline.
 
 The state file must contain at least:
 
@@ -218,7 +218,7 @@ Use these rules:
 - Prefer verifiable implementation or acceptance outcomes, not narrative summaries.
 - If the latest requirement source is a readable file, write `checklist.md` next to that requirement file.
 - If no readable requirement file exists, write `checklist.md` inside the active `plans/` directory.
-- If the source is a plan file or `plans/` directory, resolve the latest readable requirement source from `plans/.batch-plan-state.json` before refreshing the checklist.
+- If the source is a plan file or `plans/` directory, resolve the latest readable requirement source from `plans/.state.json` before refreshing the checklist.
 - If a requirement source cannot be reconstructed safely, allow review-driven plan revisions to proceed but report that `checklist.md` could not be refreshed.
 
 ### Mixed-Mode Classification
@@ -262,7 +262,7 @@ Use these rules:
 - Order final module output according to dependency layers rather than requirement heading order.
 - State explicitly when a module is blocked by another module or can run in parallel after prerequisites.
 - Refresh `checklist.md` after module plans are assembled and before refreshing the state file.
-- Refresh `plans/.batch-plan-state.json` only after all affected modules are processed.
+- Refresh `plans/.state.json` only after all affected modules are processed.
 
 ## Execute Mode
 
