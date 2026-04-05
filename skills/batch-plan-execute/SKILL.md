@@ -19,7 +19,7 @@ This skill can do the following things:
 - Detects mixed changes per module: new requirements, changed requirements, removed requirements, and review notes.
 - Builds dependency-aware module or workstream plans that reflect parallelizable and serial work.
 - Generates a consolidated `checklist.md` from the latest requirement source plus authoritative review notes.
-- Executes approved plans with implementation subagents only after an explicit execution command from the user.
+- Executes approved plans with subagents only after an explicit execution command from the user.
 
 ## Input Handling
 
@@ -248,8 +248,10 @@ Use these rules:
 - Prefer read-only analysis subagents for planning work.
 - Use a general-purpose subagent only if a dedicated read-only analysis role is unavailable and the subagent can still stay read-only.
 - Planning subagents must not edit files.
+- Pass [docs/plan.md](./docs/plan.md) requirements through in each planning subagent prompt and instruct the subagent to follow that contract for its module output.
 - Run planning subagents in parallel only within the same dependency layer.
-- Ask each planning subagent to return affected code areas, interfaces, dependencies, parallelism notes, risks, tests, and explicit assumptions.
+- Ask each planning subagent to return plain Markdown module-plan draft content that is implementation-ready under the `docs/plan.md` contract.
+- Require each planning subagent draft to cover affected code areas, interfaces, dependencies, parallelism notes, risks, tests, and explicit assumptions.
 
 ### Plan Assembly
 
@@ -274,7 +276,7 @@ Fail immediately if any of these is true:
 
 - no target plan file or `plans/` directory can be resolved
 - the latest target plan artifact still contains unresolved review comments
-- the repository cannot be grounded enough to assign write ownership safely
+- the selected plan set does not define dependency layering, upstream prerequisites, shared-change ownership, or write scopes clearly enough for direct dispatch
 - shared-change ownership is ambiguous
 - dependency cycles cannot be justified as a merged module
 
@@ -282,9 +284,11 @@ Fail immediately if any of these is true:
 
 After the gate and preconditions are satisfied:
 
-- use `docs/execute.md` for target resolution, grounding, worker dispatch, integration, verification, and completion
+- use `docs/execute.md` for target resolution, preflight, worker dispatch, integration, verification, and completion
 - execute the latest reviewed artifact for each selected module lineage
-- respect the dependency graph produced in plan mode or reconstruct it from the latest plan set before dispatch
+- dispatch directly from the approved plan boundaries and dependency metadata instead of re-grounding the repository to redefine scope
+- respect the dependency graph recorded in the latest plan set before dispatch
+- spawn one subagent per ready module unless multiple modules must be merged for safe shared-change ownership or an irreducible dependency cycle
 
 ## Failure Rules
 

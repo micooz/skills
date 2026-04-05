@@ -12,21 +12,21 @@ Use the latest reviewed artifact for each selected module lineage.
 
 Fail immediately if the latest artifact still contains unresolved HTML review comments.
 
-## Grounding Pass
+## Preflight
 
 Before spawning execution subagents:
 
-- inspect the affected code areas again
-- confirm write boundaries
-- confirm shared interfaces, schemas, migrations, and utilities
-- confirm dependency layering
-- confirm which modules are safe to run in parallel
+- resolve the latest reviewed artifact for each selected module lineage
+- confirm each selected module plan declares its dependency layer
+- confirm each selected module plan declares the upstream modules that must already be complete
+- confirm shared-change ownership boundaries are explicit in the selected plans
+- confirm each selected module plan declares the file or subsystem write scope it owns
 
-Do not skip this pass just because plan mode already happened. Execution ownership must still match the live repository state.
+Treat approved plans as the execution boundary source of truth. Do not re-scope modules, re-derive write ownership, or re-plan dependency layering during execute mode.
 
 ## Worker Dispatch
 
-Prefer implementation-oriented subagents for execution work.
+Spawn implementation-oriented subagents for execution work.
 
 Each execution subagent must receive:
 
@@ -40,8 +40,8 @@ Each execution subagent must receive:
 
 Use these rules:
 
-- Dispatch execution subagents in dependency-layer order.
-- Within a ready layer, parallelize only modules that do not share ownership of the same schema, interface, migration, utility, or infrastructure change.
+- Dispatch execution subagents in the dependency-layer order declared by the selected plans.
+- Within a ready layer, parallelize only modules whose plan-defined ownership boundaries do not overlap on the same schema, interface, migration, utility, or infrastructure change.
 - If a shared change is needed by multiple modules, give it one owner execution subagent and make other execution subagents depend on that result.
 - If an execution subagent uncovers that its plan is no longer valid against the repository, stop the affected branch and escalate to the main agent instead of freelancing a new plan.
 
@@ -59,6 +59,7 @@ Use these rules:
 
 - Review execution-subagent outputs before advancing downstream layers.
 - Do not let downstream work continue if an upstream layer failed validation.
+- Dispatch directly from approved plan boundaries instead of re-grounding the repository to redefine scope.
 - Preserve user changes and unrelated repo edits.
 - Let exceptions and test failures surface. Do not add fallback logic unless the plan explicitly requires it.
 
