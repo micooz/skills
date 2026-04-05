@@ -23,7 +23,7 @@
 
 文档优先、计划优先的编程范式是很好的实践，但我们似乎进入了一种被高频打扰的恶性循环：
 
-```
+```text
 人出需求 -> AI Planning -> 人 Review -> AI 执行 -> 人验收 -> 重复
 ```
 
@@ -52,45 +52,49 @@ npx skills add micooz/batch-plan-execute
 1. (Human) 编写需求文档，比如：`requirements.md`：
 
 ```md
-# 2026-04-02 迭代
+# 任务清单一
 
-## Bugfix
+## 模块一
 
-- xxx
-- xxx
+- bugfix: xxx
+- improve: xxx
+- feature: xxx
 
-## 功能一
+## 模块二
 
-- xxx
-- xxx
-
-## 功能二
-
-- xxx
-- xxx
+- bugfix: xxx
+- improve: xxx
+- feature: xxx
 ```
 
-> Tips: 手动分好模块方便人类阅读。
+> Tips: 建议按功能模块分段：一是方便人类阅读，二是在一定程度上避免 agent 任务冲突。
 
-> Tips: 建议按日期文件夹维护每一天的需求：
+> Tips: 建议按 `{日期}_{编号}` 命名文件夹维护每一天的需求迭代：
 
 ```diff
  .docs
- └── 2026-04-02
+ └── 2026-04-02_01
 +    └── requirements.md
 ```
 
 2. (AI) 激活技能并提供需求文档：
 
+Agent Skills 可以以主动或被动的方式激活，考虑到环境差异，推荐主动激活。
+
+> 注意：注意不同 Coding Agent 主动激活 Skill 的方式不同，后续文档中均以 `OpenCode` 写法为例：
+
 ```shell
+# Codex
 $batch-plan-execute path/to/requirements.md
+# Claude Code / OpenCode
+/batch-plan-execute path/to/requirements.md
 ```
 
 执行后产出：
 
 ```diff
  .docs
- └── 2026-04-02
+ └── 2026-04-02_01
 +    ├── plans
 +    │   ├── chat-history-persistence-api.md
 +    │   ├── chat-history-ui.md
@@ -115,7 +119,7 @@ $batch-plan-execute path/to/requirements.md
 写好评审意见后，再次执行：
 
 ```shell
-$batch-plan-execute path/to/requirements.md
+/batch-plan-execute path/to/requirements.md
 ```
 
 AI 自动修订后产出：
@@ -142,7 +146,7 @@ AI 自动修订后产出：
 所有计划评审完毕后，输入 `开始执行`，或是在一个新会话中输入：
 
 ```shell
-$batch-plan-execute path/to/requirements.md 开始执行
+/batch-plan-execute path/to/requirements.md 开始执行
 ```
 
 > Tips: 如果最新修订版本中还有评审意见未解决，AI 会拒绝执行。
@@ -209,7 +213,7 @@ c. xxx
 2. 新增需求项：直接添加即可。
 3. 修改需求项：直接修改即可。
 
-> Tips: 需求文档变更后，执行 $batch-plan-execute requirements.md 更新计划。
+> Tips: 需求文档变更后，执行 /batch-plan-execute requirements.md 更新计划。
 
 ## 其他技巧提示
 
