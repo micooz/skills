@@ -117,6 +117,8 @@ Do not ask whether to proceed. If important preferences remain unknown, proceed 
 
 When parsing a requirement source, ignore HTML comments outside fenced code blocks before extracting requirements or computing requirement-derived hashes. Commented requirement content must behave as if it does not exist.
 
+Requirement segmentation, including heading boundaries and standalone `---`-delimited requirement items, is defined by `SKILL.md`. This document only defines how each resulting module plan should be written or revised.
+
 ## Review note handling
 
 If the input material includes prior plan files with human review notes, treat those notes as input constraints only.

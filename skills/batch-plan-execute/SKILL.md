@@ -111,6 +111,9 @@ Use these naming rules:
 - `no-op` must not write a new plan file.
 - Do not overwrite an existing file silently.
 - Plan slugs should follow implementation ownership, not requirement heading text, when the two differ.
+- A new standalone `---`-delimited requirement segment may create a new base file only when it resolves to a new module lineage rather than a revision of an existing lineage.
+- If a new `---`-delimited requirement segment only expands an existing module lineage, write a new `rev` file for that lineage instead of creating a second base file.
+- Slugs derived from `---`-delimited requirement segments must still describe the implementation owner-level deliverable, not the raw segment order or divider label.
 - If the latest requirement source is a readable file, write `checklist.md` next to that requirement file instead of inside `plans/`.
 - If no readable requirement file exists, fall back to writing `checklist.md` inside the active `plans/` directory.
 - Always overwrite the resolved `checklist.md` path in place when it can be refreshed safely.
@@ -125,7 +128,17 @@ The state file must contain at least:
 - `requirement_source`
 - `requirement_hash`
 - `run_at`
+- `requirement_items`
 - `modules`
+
+Each requirement item state object must contain at least:
+
+- `item_id`
+- `source_kind`
+- `source_order`
+- `source_excerpt_hash`
+- `body_hash_without_comments`
+- `mapped_module_slug`
 
 Each module state object must contain at least:
 
@@ -134,6 +147,7 @@ Each module state object must contain at least:
 - `status`
 - `source_excerpt_hash`
 - `body_hash_without_heading`
+- `requirement_item_ids`
 - `latest_plan_file`
 - `latest_rev`
 - `last_action`
@@ -146,8 +160,11 @@ Status values must be explicit:
 Use these rules:
 
 - The state file describes planning lineage only.
+- `requirement_items` track extraction-time requirement identities, including standalone `---`-delimited segments, before they are merged into final module boundaries.
+- A new standalone `---`-delimited requirement segment must produce a new requirement item identity even when it is later merged into an existing module lineage.
 - Do not treat the state file as permission to execute.
 - If the state file is missing, bootstrap from the latest requirement source and the existing plan files instead of failing.
+- Bootstrap must reconstruct both requirement items and module mappings using the same divider and comment-preprocessing rules as normal plan mode.
 
 ## Plan Mode
 
@@ -157,23 +174,32 @@ Use [docs/plan.md](./docs/plan.md) as the detailed plan-writing contract.
 
 Default to splitting by implementation units and dependency boundaries, not by repository package structure and not mechanically by requirement headings.
 
-Before extracting modules or computing any requirement hashes, preprocess the latest requirement source by removing HTML comments outside fenced code blocks.
+Before extracting modules or computing any requirement hashes, preprocess the latest requirement source in this order:
+
+1. remove HTML comments outside fenced code blocks
+2. ignore Markdown structure inside fenced code blocks
+3. exclude document-frontmatter `---` delimiters from requirement extraction
+4. detect standalone `---` lines in the remaining requirement body as requirement-item dividers only when they are outside fenced code blocks, outside removed comments, and surrounded by non-empty requirement content
 
 Use these rules:
 
 - Treat commented requirement content as nonexistent.
-- Start from requirement sections only as an extraction aid, not as the final module boundary.
+- Treat each standalone `---`-delimited body segment as a distinct requirement item candidate before module mapping.
+- Start from requirement sections and `---`-delimited requirement items only as extraction aids, not as the final module boundary.
+- A newly added standalone `---`-delimited segment in the latest requirement source must be treated as a new requirement item even if it later maps to an existing module lineage.
 - Treat meta sections such as background, goals, scope, non-goals, assumptions, rollout, acceptance criteria, and non-functional requirements as global constraints, not standalone modules.
 - Merge requirement slices that land on the same implementation path, shared code surface, or same owner-level deliverable.
-- Split a section only when it clearly describes independent deliverables or a strict implementation sequence such as foundation work before feature work.
+- Split a section or divider-delimited item only when it clearly describes independent deliverables or a strict implementation sequence such as foundation work before feature work.
 - Prefer module boundaries that match functional ownership, shared interface ownership, migration boundaries, or deployment boundaries.
+- If a new `---`-delimited requirement item describes a new owner-level deliverable or dependency boundary, create a new module lineage for it.
+- If a new `---`-delimited requirement item only adds constraints, acceptance detail, or incremental scope to an existing module lineage, merge it into that lineage instead of creating a second base module.
 - Do not create overlapping modules that both own the same shared change.
 - Fail loudly if no implementation-bearing modules can be extracted or if shared ownership cannot be assigned clearly.
 
 If the source is plain text with no reliable headings:
 
 - derive a concise module list from the requirement content
-- use feature boundaries, workflows, deliverables, and prerequisite relationships as module names
+- use feature boundaries, workflows, deliverables, prerequisite relationships, and standalone `---`-delimited items as module extraction inputs
 - avoid generic module names like `misc`, `other`, or `supporting-work`
 
 ### Dependency And Parallelism Modeling
@@ -211,11 +237,13 @@ Use these rules:
 
 - Build the checklist from the latest requirement source plus authoritative review notes from the latest plan lineage.
 - Apply the same requirement preprocessing used for module extraction before deriving checklist items.
+- Treat standalone `---`-delimited requirement segments as distinct requirement items during checklist derivation, using the same exclusion rules for frontmatter, comments, and fenced code blocks.
 - Treat review comments as authoritative when they conflict with the original requirement document.
 - Never preserve raw HTML comments in `checklist.md`; only preserve their resolved intent.
 - Organize checklist sections by dependency layer and module order, not by raw requirement heading order.
 - Use Markdown headings plus actionable unchecked items such as `- [] ...`, no space inside of `[]`.
 - Prefer verifiable implementation or acceptance outcomes, not narrative summaries.
+- Empty divider segments, comment-only segments, and formatting-only divider changes must not create checklist entries.
 - If the latest requirement source is a readable file, write `checklist.md` next to that requirement file.
 - If no readable requirement file exists, write `checklist.md` inside the active `plans/` directory.
 - If the source is a plan file or `plans/` directory, resolve the latest readable requirement source from `plans/.state.json` before refreshing the checklist.
@@ -235,9 +263,13 @@ Classify each module into exactly one action:
 Use these defaults:
 
 - Merge requirement changes and review notes into one `revise-plan`.
+- A newly added standalone `---`-delimited requirement segment must classify as `new-plan` when it maps to no existing module lineage.
+- A newly added standalone `---`-delimited requirement segment must classify as `revise-plan` when it safely expands an existing module lineage.
+- Removing a standalone `---`-delimited requirement item should produce `obsolete-plan` only when that item was the last active requirement item mapped to the module lineage; otherwise revise the surviving lineage.
 - Generate an `obsolete-plan` revision instead of silently dropping removed modules.
 - When no requirement source is available, allow review-driven revisions only.
 - Comment-only edits in the requirement source must not trigger `revise-plan`.
+- Empty divider segments, comment-only divider segments, and formatting-only divider changes must not trigger `new-plan` or `revise-plan`.
 
 ### Plan Subagents
 

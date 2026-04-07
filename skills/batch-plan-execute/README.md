@@ -2,32 +2,32 @@
 
 English | [中文](README_zh.md)
 
-An Agent Skill for coding agents to batch-write plans and execute them.
+An Agent Skill for coding agents to write plans and execute them in batches.
 
 ## Features
 
-- Write planning documents in parallel from requirements using Subagents
+- Write plan documents in parallel from tasks using Subagents
 - Execute plans in parallel using Subagents
-- Automatically analyze dependencies in requirements and assign tasks
+- Automatically analyze dependencies in tasks and assign execution work
 - Support free-form human review
-- Adapt to requirement changes
+- Adapt to task changes
 - Save original and revised versions to disk for archival
 - Provide `checklist.md` to support acceptance review
 
 ## Prerequisites (Recommended)
 
 - Use a coding agent that supports Subagents.
-- Use an AI model that handles long-running tasks well.
+- Use an AI model that is good at long-horizon tasks.
 
 ## Why Is This Skill Needed?
 
-Document-first and plan-first programming are good practices. But we seem to have entered a vicious cycle of frequent interruptions:
+Document-first and plan-first programming are good practices, but we seem to have entered a vicious cycle of frequent interruptions:
 
 ```text
-Human writes requirements -> AI planning -> Human review -> AI execution -> Human acceptance -> Repeat
+Human provides tasks -> AI planning -> Human review -> AI execution -> Human acceptance -> Repeat
 ```
 
-We no longer need humans to write code all day. But we still sit in front of the computer watching AI work, handling frequent handoffs, and reviewing the plans and results it produces.
+We no longer need humans to write code all day, but we still sit in front of the computer watching AI work, handling frequent AI handoffs, and reviewing the plans and outcomes it produces.
 
 The design philosophy of this Agent Skill is:
 
@@ -41,60 +41,60 @@ For more design ideas, see [Short Cycle and Long Cycle](#short-cycle-and-long-cy
 
 ## How to Use
 
-### Installation
+### Installation / Update
 
 ```shell
-npx skills add micooz/batch-plan-execute
+npx skills add micooz/skills --skill batch-plan-execute
 ```
 
 ### Workflow
 
-1. (Human) Write a requirements document, for example `requirements.md`:
+1. (Human) Write a task document, for example `tasks.md`:
 
 ```md
-# Task List 1
+# Task List
 
 ## Module 1
 
-- bugfix: xxx
-- improve: xxx
-- feature: xxx
+- bug: xxx
+- ux: xxx
+- feat: xxx
 
 ## Module 2
 
-- bugfix: xxx
-- improve: xxx
-- feature: xxx
+- bug: xxx
+- ux: xxx
+- feat: xxx
 ```
 
-> Tips: It is recommended to split by module. This makes it easier for humans to read and helps reduce agent task conflicts to some extent.
+> Tips: It is recommended to split the document by feature module. This makes it easier for humans to read and helps reduce agent task conflicts to some extent.
 
-> Tips: It is recommended to keep each day's requirements in a folder named `{date}_{index}`:
+> Tips: It is recommended to keep each day's task iteration in a folder named `{date}`:
 
 ```diff
  .docs
- └── 2026-04-02_01
-+    └── requirements.md
+ └── 2026-04-02
++    └── tasks.md
 ```
 
-2. (AI) Activate the skill and provide the requirements document:
+2. (AI) Activate the skill and provide the task document:
 
 Agent Skills can be activated proactively or passively. Considering environment differences, proactive activation is recommended.
 
-> Note: Different coding agents activate skills differently. The following examples use `OpenCode` syntax:
+> Note: Different coding agents activate skills differently. The examples below use `OpenCode` syntax:
 
 ```shell
 # Codex
-$batch-plan-execute path/to/requirements.md
+$batch-plan-execute path/to/tasks.md
 # Claude Code / OpenCode
-/batch-plan-execute path/to/requirements.md
+/batch-plan-execute path/to/tasks.md
 ```
 
 After execution, it produces:
 
 ```diff
  .docs
- └── 2026-04-02_01
+ └── 2026-04-02
 +    ├── plans
 +    │   ├── chat-history-persistence-api.md
 +    │   ├── chat-history-ui.md
@@ -102,27 +102,44 @@ After execution, it produces:
 +    │   ├── ui-polish-and-sse-guardrails.md
 +    │   └── sqlite-prisma-foundation.md
 +    ├── checklist.md
-     └── requirements.md
+     └── tasks.md
 ```
 
-> Tips: AI will automatically analyze feature dependencies and split the work into modules.
-> Tips: `checklist.md` consolidates the original requirements and the latest review decisions into the final acceptance checklist.
+> Tips: AI will automatically analyze dependencies in the tasks and split the work into modules.
+> Tips: `checklist.md` consolidates the original tasks and the latest review decisions into the final acceptance / verification checklist.
 
-3. (Human) Review the generated planning documents under `plans/`
+3. (Human) Review the planning documents generated under `plans/`
 
-Insert HTML comment blocks like `<!-- xxx -->` anywhere in the planning documents.
+Insert a comment like `<!-- xxx -->` anywhere in a plan document to leave review feedback.
 
-> Tips: If an AI revision already exists (`xxx.rev-n.md`), review the latest revision instead.
+```md
+- Some feature
+<!-- Change to: xxx -->
+```
+
+AI will leave a `【⚠ Decision Required ⚠】` marker in the planning document when it needs you to choose an option. Use `<!-- xxx -->` in the same way to select one:
+
+```md
+## Key Changes
+- xxx【⚠ Decision Required ⚠】
+a. (Recommended) xxx
+b. xxx
+c. xxx
+<!-- Use a. -->
+```
+
+> Tips: Comment shortcut: macOS `Command + /`, Windows `Ctrl + /`.
+> Tips: If a revision already exists (`xxx.rev-n.md`), review the latest revision instead.
 
 4. (AI) Revise the plans
 
 After writing your review comments, run it again:
 
 ```shell
-/batch-plan-execute path/to/requirements.md
+/batch-plan-execute path/to/tasks.md
 ```
 
-After AI revises them, it produces:
+AI will automatically revise the plans and produce:
 
 ```diff
  .docs
@@ -136,17 +153,17 @@ After AI revises them, it produces:
 +    │   ├── ui-polish-and-sse-guardrails.rev-1.md
      │   └── sqlite-prisma-foundation.md
      ├── checklist.md
-     └── requirements.md
+     └── tasks.md
 ```
 
 > Tips: Documents without review comments will not generate revision versions.
 
 5. (AI) Execute the plans
 
-After all plans have been reviewed, enter `implement now`, or use this in a new session:
+After all plans have been reviewed, type `implement now`, or use this in a new session:
 
 ```shell
-/batch-plan-execute path/to/requirements.md implement now
+/batch-plan-execute path/to/tasks.md implement now
 ```
 
 > Tips: If the latest revision still has unresolved review comments, AI will refuse to execute.
@@ -165,76 +182,70 @@ At this point, go back to the previous step and let AI finish handling the revie
 
 6. (Human) Accept the results
 
-Check each change against `checklist.md` to ensure the agent fully executed the plan.
+Use `checklist.md` to verify each change and make sure the agent fully executed the plan.
 
 ```md
 - [x] bugfix
-- [] feature 1
+- [] feature
 ```
 
-> Tips: You can ask the agent to use this file to handle any missed requirement items.
+> Tips: You can ask the agent to use this file to handle any missed task items.
 
-## Conventions
+7. (Human) Modify, delete, or add tasks
 
-### Handling Pending Items
+For modifications or deletions, edit the task document in place:
 
-AI will leave a `【⚠ Decision Required ⚠】` marker in the planning document when it needs you to choose an option:
+```diff
+ # Task List
 
-```md
-## Key Changes
-- xxx【⚠ Decision Required ⚠】
-a. (Recommended) xxx
-b. xxx
-c. xxx
+ ## Module 1
+
+ - bug: xxx
+- - ux: xxx (delete the task directly)
+- - feat: xxx
++ <!-- - feat: xxx --> (delete the task by commenting it out)
 ```
 
-See the `Plan Review` section below for how to handle pending items.
+For new tasks, such as issues discovered during acceptance, it is recommended to append `---` and a new section in the original document:
 
-### Plan Review
+```diff
+ # Task List
 
-Insert HTML comment blocks `<!--  -->` for review.
+ ## Module 1
 
-> Tips: macOS shortcut: `Command + /`; Windows shortcut: `Ctrl + /`.
+ - bug: xxx
+ - ux: xxx (delete the task directly)
+ - feat: xxx
 
-```md
-# Some Feature
-<!-- Change to: xxx -->
++ ---
 
-- xxx【⚠ Decision Required ⚠】
-a. (Recommended) xxx
-b. xxx
-c. xxx
-<!-- Use a. -->
++ ## New Tasks
+
++ - bug: xxx
 ```
 
-### Requirement Changes
-
-1. Deprecated requirement items: delete them directly, or comment them out with `<!-- -->`.
-2. New requirement items: add them directly.
-3. Modified requirement items: edit them directly.
-
-> Tips: After the requirements document changes, run `/batch-plan-execute requirements.md` to update the plans.
+> Tips: After the task document changes, run `/batch-plan-execute tasks.md` again to update the plans.
 
 ## Other Tips
 
-- In VS Code-like IDEs, use `@command:workbench.files.action.compareFileWith` to compare revision versions.
-- Switch to a deep-thinking model in the planning phase to improve plan quality.
+- In VS Code-like IDEs, use `@command:workbench.files.action.compareFileWith` to compare differences between revision versions.
+- Increase the model's reasoning effort during the planning phase to improve the quality of the plan documents.
 
 ## Short Cycle and Long Cycle
 
-I call the old Agent Coding workflow the Short Cycle. In the Short Cycle, humans and agents operate in a single-threaded mode.
+I call the previous Agent Coding workflow the Short Cycle. In the Short Cycle, humans and agents operate in a single-threaded mode.
 
-Single-threading often leads to more rounds of interaction, less focus, and more token use:
+Single-threading often leads to more rounds of interaction, less focus, and more token consumption:
 
 ```text
-+------------------------+       +------------------+       +----------------+
-| User: Requirement Item | ----> | Agent: Planning  | ----> | User: Review   |
-+------------------------+       +------------------+       +----------------+
-                                                                    |
-                                                                    v
-                                   +---------------+       +----------------+
-                        Loop <---- | User: Inspect | <---- | Agent: Execute |
-                                   +---------------+       +----------------+
++-----------------+       +------------------+       +----------------+
+| User: Task Item | ----> | Agent: Planning  | ----> | User: Review   |
++-----------------+       +------------------+       +----------------+
+                                                              |
+                                                              v
+                             +---------------+       +----------------+
+                  Loop <---- | User: Inspect | <---- | Agent: Execute |
+                             +---------------+       +----------------+
 ```
 
 We need to change this workflow and adopt a multi-threaded asynchronous collaboration model, extending the Short Cycle into a Long Cycle.
@@ -243,7 +254,7 @@ Multi-threading means fewer rounds of interaction, easier concentration on one t
 
 ```text
                  +------------------------+
-                 | User: Requirement List |
+                 |    User: Task List     |
                  +------------------------+
                    /          |          \
                   v           v           v
