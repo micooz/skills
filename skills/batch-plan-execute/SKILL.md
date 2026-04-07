@@ -176,7 +176,10 @@ Use these rules:
 - If the latest requirement source is a readable file, write `checklist.md` next to that requirement file instead of inside `plans/`.
 - If no readable requirement file exists, fall back to writing `checklist.md` inside the active `plans/` directory.
 - Always overwrite the resolved `checklist.md` path in place when it can be refreshed safely.
-- `checklist.md` is a derived snapshot, not a plan lineage artifact and not an execution target.
+- `checklist.md` is a derived acceptance snapshot based on the latest requirement source and authoritative review notes.
+- It exists to help humans verify whether the requested outcomes and acceptance expectations have been satisfied.
+- It is not a plan lineage artifact, not an execution target, and not an implementation task list.
+- Review notes may refine or correct checklist content only when they change the authoritative requirement or acceptance intent.
 - If an earlier `checklist.md` exists, treat it only as an optional source of prior checkbox state for safely matched unchanged items, never as the source of truth for checklist content.
 
 ### State File Contract

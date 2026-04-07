@@ -96,10 +96,13 @@ Generate or refresh `checklist.md` during every successful `plan` run.
 Use these rules:
 
 - Build the checklist from the latest requirement source plus authoritative review notes from the latest plan lineage.
-- Organize checklist sections by dependency layer and module order, not by raw requirement heading order.
+- Treat review notes as authoritative checklist inputs only when they clarify, correct, add, remove, or sharpen requirement scope or acceptance expectations.
+- Organize checklist sections by requirement topic, user-visible outcome, or reviewer-facing acceptance area rather than by dependency layer, module order, or raw requirement heading order.
+- Module lineage and dependency metadata may inform wording disambiguation, but they must not become the primary checklist structure.
 - First regenerate the checklist content from current authoritative inputs, then optionally restore prior checked states from the previous `checklist.md` only for safely matched unchanged items.
 - Use Markdown headings plus actionable checklist items such as `- [] ...` or `- [x] ...`, with no space inside `[]`.
-- Prefer verifiable implementation or acceptance outcomes, not narrative summaries.
+- Prefer verifiable acceptance outcomes and reviewer-observable results, not implementation steps, execution queues, agent work breakdowns, or narrative summaries.
+- Do not rewrite the checklist into a dependency-sorted implementation task list.
 - Preserve `[x]` only for safe one-to-one matches between old and new checklist items.
 - Prefer the strongest available identity match first, such as requirement item identity, module lineage, and normalized checklist text.
 - Treat pure reordering, heading movement, and non-semantic formatting-only rewrites as eligible for `[x]` preservation when the match is still safe and one-to-one.
