@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Naming"
+  short_description: "Name products and check domain options"
+  default_prompt: "Use $product-naming to propose product names and check matching domain availability."
