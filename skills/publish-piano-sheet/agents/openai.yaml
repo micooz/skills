@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Piano Sheet"
+  short_description: "Produce and publish piano sheet music"
+  default_prompt: "Use $publish-piano-sheet to turn an audio recording into a publishable piano score and video."
