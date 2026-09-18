@@ -7,7 +7,7 @@ description: Produce a publishable piano score and matching 1080p60 falling-note
 
 ## Computer Use
 
-Use **Computer Use** when available for browser-driven steps. Prefer it for Songscription, NoteFall, YouTube Studio, and mymusic5 so you can inspect rendered controls, handle file dialogs and canvas interactions, and visually verify uploads, edits, and final publication state. Fall back to other available browser tooling only when Computer Use is unavailable.
+For browser-driven work, use Computer Use through `cua_repl`. For DOM-heavy sites such as YouTube Studio, prefer Playwright/DOM inspection; use AX for application controls, native dialogs, and fallback, and screenshots for visual verification. Use full CDP only when DOM access is insufficient and the approval policy allows it. Prefer a connector, API, or CLI when it can perform the same action safely. Do not launch Chrome with remote debugging or bypass `cua_repl` with standalone CDP/Playwright; otherwise use an approved fallback or stop. Confirm uploads, public edits, publishing, and deletion at action time.
 
 ## Outcome
 
@@ -156,7 +156,7 @@ The script writes title, composer, and arranger metadata, then reparses the resu
 
 Set these values:
 
-- `Camera -> Pivot Y`: `0.30`
+- `Camera -> Pivot Y`: `0.35`
 - `Layout -> Keyboard Y`: `-3.00`
 - `Scene -> Background Image`: the canonical cover image
 - `Scene -> Opacity`: `0.30`
@@ -170,7 +170,9 @@ Set these values:
 
 4. Use `File -> Save` and save the NoteFall project as `<Track> - <Source>.nfz` in the same track directory. Confirm the file exists before continuing.
 
-5. Use `File -> Export` with:
+5. Before exporting, send the user the current NoteFall URL and ask them to confirm the previewed visual effect. Do not export until the user explicitly approves. If they request changes, apply them, save the project again, and repeat this confirmation.
+
+6. Use `File -> Export` with:
 
 - `Video + audio (MP4)`
 - `1080p`
@@ -181,7 +183,7 @@ Save the MP4 directly in the song directory. Verify it with `ffprobe` before upl
 
 Confirm 1920x1080, 60fps, stereo audio, and a browser-playable H.264/AAC combination.
 
-Before uploading video, send the NoteFall URL to the user for video review.
+After exporting, send the exported video path to the user for a final review before uploading.
 
 ### 7. YouTube draft
 
@@ -196,9 +198,9 @@ Title format:
 Description structure:
 
 ```text
-📝 Music Sheet: <app link, added after publication>
+📝 Sheet Music: <app link, added after publication>
 
-🎹 Welcome to <Creator Name>!
+🎹 Welcome to <Channel Name>!
 
 <Researched description of the original piece.>
 
@@ -248,5 +250,6 @@ After the user approves publication, complete the public action, verify the vide
 - Pitfall: Provider can derive an approximate or incorrect project/song name. Recovery: create the correctly named project or manual record instead of using an upload alias or approximate match.
 - Pitfall: Provider controls can be hidden by unstable layout or overlays. Recovery: wait, use the visibly rendered control, dismiss overlays, or reopen the direct edit/upload URL.
 - Pitfall: Songscription's direct MusicXML download can fail in an individual session. Recovery: use the bundled MIDI-to-MusicXML script only when the download cannot be obtained instead of making conversion the default path.
+- Pitfall: A marketplace rich-text description editor may collapse blank lines or keep only the first line. Recovery: after insertions, re-read field indices; set the full field once with `setValue` and `\n\n` between sections, then verify the visible blank paragraphs in a screenshot. If that fails, paste one section at a time with two `Return` presses between sections; avoid long `paste` runs and do not use `typeText` for long multilingual copy.
 - Pitfall: YouTube's description editor can retain only the first line, append duplicate text, or accept a DOM-only value. Recovery: append and delete one space, save, confirm `Save` and `Undo changes` are disabled, then reload or inspect the public watch page.
 - Pitfall: NoteFall repeat, audio-lane, or `.nfz` state can reset during recovery. Recovery: verify all three alongside the rendered media before publishing.
