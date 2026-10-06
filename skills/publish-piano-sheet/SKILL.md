@@ -128,6 +128,14 @@ In Songscription's `Download` panel:
 - Download `MusicXML` for the marketplace.
 - Download `MIDI` for the NoteFall video pipeline.
 - Save the PDF, MusicXML, and MIDI directly in the song directory and keep the canonical stem.
+- Immediately after saving the MIDI, gap-process it in place so the track directory keeps only one `.mid`:
+
+```bash
+uv run --no-project --with mido \
+  python scripts/midi_note_gap.py '<Track> - <Source>.mid'
+```
+
+  Transcriptions often end each note exactly where the next note on the same channel starts, so consecutive notes look fused in the NoteFall waterfall. The script shortens every note tail by 0.05 s (never below 0.08 s) while keeping onsets and total duration unchanged. If the user asks for a different separation, rerun from a fresh Songscription MIDI download with `--gap`/`--min-length`.
 - The panel may also expose `RAW MIDI` and `MP3`, which are not required here.
 
 ### 5. MusicXML fallback
@@ -149,7 +157,7 @@ The script writes title, composer, and arranger metadata, then reparses the resu
 ### 6. NoteFall video
 
 1. Open `https://notefall.app/`.
-2. Use `File -> Open` and load the canonical MIDI file.
+2. Use `File -> Open` and load the gap-processed MIDI file.
 3. Ask user if use original audio, use `File -> Open Audio` load the original audio then disable MIDI audio by click left audio icon of MIDI Track. Do not turn off whole stage audio.
 
 > Don't click on the canvas; doing so will accidentally add notes.
