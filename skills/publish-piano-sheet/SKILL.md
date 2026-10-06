@@ -220,6 +220,8 @@ Description structure:
 #<Source> #<SourceRevision> #<Original title> #<English title> #<Composer> #PianoCover #GameMusic #VGM #Piano
 ```
 
+Omit the `📝 Sheet Music:` line entirely while the sheet URL does not exist yet; never write a placeholder for it. After the mymusic5 sheet is published, insert `📝 Sheet Music: <app link>` as the first line of the description.
+
 Write the descriptive paragraph from the collected, verified research rather than copying the example's prose or simply substituting track names. Use concrete facts such as the original release/source, composer notes, soundtrack placement, or documented mood and instrumentation. Keep uncertain claims out of the public description.
 
 Preparation checklist:
@@ -242,11 +244,11 @@ After the user approves publication, complete the public action, verify the vide
 4. Complete the score-information step. Ask the user about any unclear field rather than guessing.
 5. In `Sales Information`, add a title and product description for every language option exposed by the page. Include English and all optional locales, such as Korean, Japanese, Traditional Chinese, and Simplified Chinese when available. Do not leave an optional locale empty.
 6. Use a localized track or source name in a locale only when `research.md` cites a reliable source for that name. Do not translate, transliterate, or infer names. If no verified localization exists, reuse the canonical verified name unchanged in every locale. Use the musician/source field for the source rather than the composer, and keep proper names and credits consistent with the researched metadata.
-7. Use the public YouTube description as the source of truth for every locale's product description. Keep the same content and information, including the descriptive paragraphs and credit details, while translating or adapting the wording as needed for natural language and marketplace formatting. The `Music Sheet` line is the only content to omit because the sheet URL does not exist yet. Do not create locale-specific content, omit other sections, or paste the English description unchanged into non-English locales.
+7. Use the public YouTube description as the source of truth for every locale's product description. Keep the same content and information, including the descriptive paragraphs and credit details, while translating or adapting the wording as needed for natural language and marketplace formatting. The `Sheet Music` line is absent at this point because the sheet URL does not exist yet. Do not create locale-specific content, omit other sections, or paste the English description unchanged into non-English locales.
 8. Enter the public YouTube performance URL, confirm the price and all remaining publication metadata with the user, then publish.
 9. Record the public sheet URL and `sheet_id`.
 10. Prefix the app link with `https://mymusic5.com/applink?sheet_id=<sheet_id>`.
-11. Add this as the first line of the YouTube description: `📝 Music Sheet: <app link>`.
+11. Add this as the first line of the YouTube description: `📝 Sheet Music: <app link>`.
 12. Open the App Link in a new tab in the current task Chrome window and leave it visible for the user.
 13. Report both the public YouTube URL and `https://www.mymusic5.com/<username>/<sheet_id>`, plus the current review status if the marketplace still shows it as under review or in review.
 
