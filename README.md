@@ -16,6 +16,7 @@ npx skills add micooz/skills
 - [deslop](./skills/deslop/): An Agent Skill for trimming redundancy from comments and docs: comments that restate code, historical or stale notes, commented-out code, over-explanation, and finished plans written as current guidance. It edits prose only, never executable code.
 - [product-naming](./skills/product-naming/): An Agent Skill for proposing product names, explaining naming metaphors, and checking matching domain availability and price signals.
 - [publish-piano-sheet](./skills/publish-piano-sheet/): An Agent Skill for turning original audio into a piano score with PDF/MIDI/MusicXML deliverables, generating a falling-notes piano performance video and publishing it to YouTube, then listing the sheet music for sale on mymusic5.
+- [writing-style](./skills/writing-style/): My personal writing style for essays, blog posts, product notes, and short posts, with a checklist for removing generic AI cadence.
 
 ## License
 

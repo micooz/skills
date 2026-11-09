@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Style"
+  short_description: "My personal writing style"
+  default_prompt: "Use $writing-style to draft or revise this piece in my personal writing style."
