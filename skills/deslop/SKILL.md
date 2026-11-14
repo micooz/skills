@@ -1,6 +1,6 @@
 ---
 name: deslop
-description: 'Reduce redundancy in comments, docstrings, and docs: comments that restate code, chronology or change history, commented-out code, stale or contradictory text, over-explanation, and finished plans written as current guidance. Use after writing or reviewing code or docs, before committing a diff, or on requests such as 清理冗余注释、去 slop、历史注释、过时注释、过度解释、精简文档. Edits only comments and prose, never executable code. Defaults to the current diff; it does not sweep an untouched repository unless asked.'
+description: 'Reduce redundancy in comments, docstrings, and docs: comments that restate code, chronology or change history, residue from removed behavior, commented-out code, stale or contradictory text, over-explanation, and finished plans written as current guidance. Use after writing or reviewing code or docs, before committing a diff, or on requests such as 清理冗余注释、去 slop、历史注释、过时注释、过度解释、精简文档. Edits only comments and prose, never executable code. Defaults to the current diff; it does not sweep an untouched repository unless asked.'
 ---
 
 # Deslop
@@ -14,6 +14,10 @@ This skill edits comments, docstrings, and prose only. Unused symbols, `any` cas
 Describe the current implementation, contract, command, state, or constraint directly. Git owns the record of how it changed.
 
 Do not write or keep "previously / now", "was X, now Y", "changed in...", "moved from...", migration steps, phase logs, old-vs-new comparisons, implementation narratives, verification transcripts, or commit and release baselines. Keep only third-party attribution, compliance notices, and measured evidence whose date or version is part of the claim.
+
+Descriptions leave no residue of removed behavior. State the positive current behavior instead of a prohibition or exclusion that only negates what is gone; name things by the surviving contract instead of the removal. Genuine safety, security, data-integrity, and external-compatibility constraints remain explicit. The check is whether the statement still helps a reader who never saw the previous implementation.
+
+Tests and assertions are outside this skill's edit scope. Report checks whose only purpose is to prove a removed symbol, command, or path is gone; they record a change instead of current behavior. Verification reports state the current result and current failures, not a comparison with an earlier state.
 
 This applies to comments, docstrings, READMEs, guides, design notes, review reports, and final explanations.
 
@@ -94,6 +98,7 @@ When unsure whether a comment or paragraph is slop, ask: would deleting it make 
 3. Apply the removals above; beware of string literals, multiline templates, or regex patterns that resemble comments.
 4. Re-read each edited region. Confirm that executable code is completely untouched, for example by checking that `git diff -w` shows changes strictly within comment delimiters or documentation prose blocks.
 5. Run the project's existing checks if cheap (typecheck, lint, doc link check). A comment-only edit that breaks a check is a mistake: revert that edit. If there is no runnable check, say so; do not claim verification.
+6. Re-read the final explanation, if any: state current results and failures, not comparisons with an earlier state.
 
 ## Examples
 
